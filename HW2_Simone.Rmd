@@ -1,0 +1,65 @@
+---
+title: "Data 607 Assingment 2 "
+author: "Joseph Simone"
+date: "9/8/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Assingment 2 - SQL and R 
+
+Choose six recent popular movies. Ask at least five people that you know (friends, family, classmates,
+imaginary friends) to rate each of these movie that they have seen on a scale of 1 to 5. Take the finalults
+(observations) and store them in a SQL database. Load the information into an R dataframe.
+
+## The Set Up 
+
+I aquired a user ratings dataset from, https://www.kaggle.com/shubhammehta21/movie-lens-small-latest-dataset#ratings.csv, and import a small amount of the data set into MySql server.
+
+Then I imported the database, 'movies, I created out of the original dataset.
+
+```{r}
+library(RMySQL)
+```
+
+
+```{r}
+db <- dbDriver("MySQL")
+```
+
+```{r}
+mydb <- dbConnect(db, username="root", password="Yogibear1", dbname ="movies", host="localhost")
+```
+
+```{r}
+sql <- "SELECT * from ratings"
+```
+
+```{r}
+final <- dbGetQuery(mydb, sql)
+final
+```
+
+
+## Beginning of Data Transformation 
+I started giving userId variable's, that were repfinalenting with number, names. I started doing the same for the movieId variable.
+```{r}
+final$userId[final$userId == "1"] <- "Kristyn"
+final$userId[final$userId == "2"] <- "Keira"
+final$userId[final$userId == "3"] <- "Dom"
+final$userId[final$userId == "4"] <- "Sharon"
+final$userId[final$userId == "5"] <- "Vito"
+final$userId[final$userId == "6"] <- "Justin"
+ 
+ 
+final$movieId[final$movieId == "1"] <- "Once Upon a Time in Hollywood"
+final$movieId[final$movieId == "3"] <- "The Lion King"
+final$movieId[final$movieId == "6"] <- "Fast & Furious: Hobbs & Shaw"
+final$movieId[final$movieId == "7"] <- "Dora the Explorer"
+final$movieId[final$movieId == "50"] <- "It: Chapter 2"
+final$movieId[final$movieId == "70"] <- "Angel has"
+```
+
