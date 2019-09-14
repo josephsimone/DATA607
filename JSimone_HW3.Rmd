@@ -1,0 +1,135 @@
+---
+title: "Data 607 Assignment 3"
+author: "Joseph Simone"
+date: "9/13/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+Libraries used:
+```{r}
+library(knitr)
+library(ggplot2)
+library(png)
+library(stringr)
+```
+
+
+
+## Problem 3
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/3.3.png"
+include_graphics(imgage)
+```
+
+Data Setup
+```{r}
+# data input
+rdata <- "555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+names <- unlist(str_extract_all(rdata, "[[:alpha:]., ]{2,}"))
+names
+```
+
+##3.1 
+```{r}
+# Sort so every name is in the same order
+name <- str_replace_all(names, "(.+)(, .+)$", "\\2 \\1")  
+name 
+```
+
+```{r}
+ # Removes commas
+name1 <- str_replace_all(name, ", ", "")
+name1
+```
+
+```{r}
+ # Removes name prefex
+name2 <- str_replace_all(name1, "[A-Z][a-z]([a-z]?)\\.", "")
+name2
+```
+
+##3.2 
+
+```{r}
+dataf <- data.frame(name2)
+dataf$title <- str_detect(string = name2, pattern = "\\w{2,3}\\.")
+kable(dataf)
+```
+
+## 3.3
+
+```{r}
+dataf$secname <- str_detect(string = name2, pattern = "[A-Z]{1}\\.")
+kable(dataf)
+```
+
+
+## Problem 4 
+```{r, include=TRUE}
+imgage2 <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/3.4.png"
+include_graphics(imgage2)
+```
+
+##4.1
+
+```{r}
+fig1 <- "My phone bill is $90 or is it 90$"
+str_extract_all(fig1, "[0-9]+\\$")
+```
+
+##4.2
+
+```{r}
+fig2 <- "The amount of four letter words or less that are in this sentence are."
+str_extract_all(fig2, "\\b[a-z]{1,4}\\b")
+```
+
+##4.3
+
+```{r}
+fig3 <- "This is really cool dude.txt\n"
+str_extract_all(fig3, ".*?\\.txt$")
+```
+
+
+##4.4
+
+```{r}
+fig4 <- "My date of birth is not 01/01/1911?"
+str_extract_all(fig4, "\\d{2}/\\d{2}/\\d{4}")
+```
+
+##4.5
+
+```{r}
+
+text = "<Header>text</head><body>text</body>"
+form= "<(.+?)>.+?</\\1>" 
+str_extract(text, form) 
+```
+
+
+## Problem 9
+
+```{r, include=TRUE}
+imgage2 <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/3.9.png"
+include_graphics(imgage2)
+```
+
+
+```{r}
+encrypt = "kfgnrejngernmgfdgnjrgIFvjdsjfwndfdffsdfgghhtuyYdsfsdfsdafdfsdafasdfdfeOferwrtfrefwfscsdUfawfrefarfrfCfasdfdfafdfAfasdfdfasdfdsafdsafNfdasfvafdgvthgyytRbtyhythtyhjtyjtyEjtyurytjkuykyuikAykuuyukyukuykirthDgersretgtrgTgrtgtrgtHgrewgdhbgIhytjutyjSnytytjnytrwhMgertwgttrgYjytujyturjyujCgregtrtrhgrOhrtwhrthytrDgerrgrthgEgergwrtegWgreergterOgererwgRgerrbvrtbKfreefferwSvbwtrgbrttrtr"
+
+form = "[[:upper:].]+"
+
+#finds hidden letters
+str_replace_all(paste(unlist(str_extract_all(encrypt, form)),collapse=""),pattern="[\\.]+",replacement=" ")
+decrypt<- str_extract_all(encrypt, "[ [:upper:] !]")
+
+cat(unlist(decrypt))
+```
+
