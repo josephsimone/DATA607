@@ -1,0 +1,179 @@
+---
+title: "Data 607 Project 1"
+author: "Joseph Simone"
+date: "9/17/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+
+
+## Libraries Used:
+```{r}
+library(reshape2)
+library(downloader)
+library(htmlTable)
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(DT)
+library(png)
+library(knitr)
+
+```
+
+## Chess Data File Project
+
+In this project, you’re given a text file with chess tournament results where the information has some structure. 
+
+Yourjob is to create an R Markdown file that generates a .CSV file (that could for example be imported into a SQL database)
+
+with the following information for all of the players:
+
+Player’s Name, Player’s State, Total Number of Points, Player’s Pre-Rating, and 
+
+Average Pre Chess Rating of Opponents
+
+For the first player, the information would be:
+Gary Hua, ON, 6.0, 1794, 1605
+
+1605 was calculated by using the pre-tournament opponents’ ratings of 1436, 1563, 1600, 1610, 1649, 1663, 1716, and dividing by the total number of games played
+
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/Project1.png"
+include_graphics(imgage)
+```
+
+## Data Import and Set-up
+
+```{r}
+chessdata <-'https://raw.githubusercontent.com/josephsimone/DATA607/master/tournamentinfo.txt'
+file <- "tournamentinfo.txt"
+
+downloader::download(chessdata, file)
+
+c<- file(file, open="r")
+tournament.raw <- readLines(c, warn = FALSE)
+close(c)
+```
+
+
+
+## Data Cleaning and Preprocessing 
+
+```{r}
+ tournament.data. <- str_replace_all(str_replace_all(tournament.raw, "->", ">>"), "-{3,}", "")
+
+tournament.data. <- tournament.data.[tournament.data.  != ""] 
+
+tournament.data. <- tournament.data.[-(1:2)]
+
+tournament1 <- tournament.data.[str_detect(str_sub(tournament.data., 1, 6), "[0-9]")]
+
+ tournament2 <- tournament.data.[str_detect(str_sub(tournament.data., 1, 6), "[A-Z]{2,2}")]
+```
+
+
+```{r}
+head(tournament1, 5)
+```
+
+
+```{r}
+head(tournament2, 5)
+```
+
+## Parsing into two Data-Frames
+```{r}
+tourny1df <- data.frame(player_num   = as.numeric(substr(tournament1, 1,  6)),
+                         player_name  = str_trim(substr(tournament1, 8,  40), side="both"),
+                         total_pts    = as.numeric(substr(tournament1, 42, 46)),
+                         round1       = substr(tournament1, 48, 52),
+                         round2       = substr(tournament1, 54, 58),
+                         round3       = substr(tournament1, 60, 64),
+                         round4       = substr(tournament1, 66, 70),
+                         round5       = substr(tournament1, 72, 76),
+                         round6       = substr(tournament1, 78, 82),
+                         round7       = substr(tournament1, 84, 88), stringsAsFactors=FALSE)
+```
+
+
+```{r}
+tourny2df <- data.frame(player_state  = str_trim(substr(tournament2, 1,  6), side="both"),
+                           uscf_id       = str_extract(substr(tournament2, 8,  40), "\\d+"),
+                           pre_rating    = as.numeric(str_extract(substr(tournament2, 8,  40), "(?<=R: ).\\d+(?=)")),
+                           post_rating   = as.numeric(str_extract(substr(tournament2, 8,  40), "(?<=>>).\\d+(?=)")),
+                           stringsAsFactors=FALSE)
+```
+
+## Joining of two newly created Data-Frames
+
+```{r}
+finaldf <- cbind(tourny1df, tourny2df)
+players <- select(finaldf, player_num:total_pts, player_state:post_rating)
+```
+
+
+## Creation of Final Output
+```{r}
+matches_played <-  
+      finaldf %>% select(player_num, round1:round7) %>%
+      melt(id.var=c("player_num"), value.name="outcome_opp")  %>% 
+     mutate( round        = as.numeric(str_replace(variable, "round", "")),
+              outcome      = str_extract(outcome_opp, "^\\w+"),
+              opponent_num = as.numeric(str_extract(outcome_opp, "\\d+$"))) %>%
+      select(-c(variable, outcome_opp)) %>%
+      inner_join(select(players, player_num, pre_rating), c("opponent_num" = "player_num")) %>%
+      select(player_num, round, outcome, opponent_num, pre_rating) %>%
+      arrange(player_num, round)
+```
+
+## Variable change
+```{r}
+names(matches_played)[names(matches_played) == "pre_rating"] <- "opponent_pre_rating"
+```
+
+## Calculation of Opponent's Average
+
+```{r}
+playersdf <-  
+      matches_played %>%
+      group_by(player_num) %>% summarise(opponents_avg_pre_rating = round(mean(opponent_pre_rating))) %>%
+      inner_join(players, by="player_num") %>%
+     select(player_num, player_name, player_state, total_pts,  uscf_id, pre_rating, post_rating, opponents_avg_pre_rating)
+
+
+```
+
+## Searchable Data-Frame
+
+```{r}
+
+#datatable(playersdf, extensions = 'Scroller', options = list(
+ #   deferRender = TRUE,
+ #   scrollY = 200,
+ #   scroller = TRUE
+# ))
+```
+
+
+## Plot
+```{r}
+g <- ggplot(playersdf, aes(x=playersdf$pre_rating, y=playersdf$total_pts)) + geom_point() + geom_smooth(method="lm")
+```
+
+```{r}
+g + ggtitle("Total Points vs Players' Pre-Rating", subtitle="From Chess Tournament Dataset") + xlab("Pre-Rating") + ylab("Total")
+```
+
+
+## Export to .CSV
+```{r}
+write.table(playersdf, file = "chessdata.csv", sep = ",", row.names = FALSE)
+```
+
