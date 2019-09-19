@@ -2,7 +2,7 @@
 title: "Data 607 Project 1"
 author: "Joseph Simone"
 date: "9/17/2019"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -10,9 +10,6 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```
 
-
-
-## Libraries Used:
 ```{r}
 library(reshape2)
 library(downloader)
@@ -27,6 +24,7 @@ library(knitr)
 ```
 
 ## Chess Data File Project
+
 
 In this project, you’re given a text file with chess tournament results where the information has some structure. 
 
@@ -49,6 +47,8 @@ imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/Project1.png
 include_graphics(imgage)
 ```
 
+
+
 ## Data Import and Set-up
 
 ```{r}
@@ -62,6 +62,9 @@ tournament.raw <- readLines(c, warn = FALSE)
 close(c)
 ```
 
+```{r}
+#tournament.raw
+```
 
 
 ## Data Cleaning and Preprocessing 
@@ -124,8 +127,8 @@ players <- select(finaldf, player_num:total_pts, player_state:post_rating)
 matches_played <-  
       finaldf %>% select(player_num, round1:round7) %>%
       melt(id.var=c("player_num"), value.name="outcome_opp")  %>% 
-     mutate( round        = as.numeric(str_replace(variable, "round", "")),
-              outcome      = str_extract(outcome_opp, "^\\w+"),
+     mutate(round = as.numeric(str_replace(variable, "round", "")),
+              outcome = str_extract(outcome_opp, "^\\w+"),
               opponent_num = as.numeric(str_extract(outcome_opp, "\\d+$"))) %>%
       select(-c(variable, outcome_opp)) %>%
       inner_join(select(players, player_num, pre_rating), c("opponent_num" = "player_num")) %>%
@@ -155,10 +158,9 @@ playersdf <-
 ```{r}
 
 #datatable(playersdf, extensions = 'Scroller', options = list(
- #   deferRender = TRUE,
+#    deferRender = TRUE,
  #   scrollY = 200,
- #   scroller = TRUE
-# ))
+ #   scroller = TRUE ))
 ```
 
 
