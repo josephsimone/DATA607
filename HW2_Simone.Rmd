@@ -1,13 +1,16 @@
 ---
-title: "Data 607 Assingment 2 "
+title: "Data 607 Assignment 2"
 author: "Joseph Simone"
-date: "9/8/2019"
+date: "9/10/2019"
 output: pdf_document
 ---
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 
 ## Assingment 2 - SQL and R 
 
@@ -15,11 +18,35 @@ Choose six recent popular movies. Ask at least five people that you know (friend
 imaginary friends) to rate each of these movie that they have seen on a scale of 1 to 5. Take the finalults
 (observations) and store them in a SQL database. Load the information into an R dataframe.
 
-## The Set Up 
 
-I aquired a user ratings dataset from, https://www.kaggle.com/shubhammehta21/movie-lens-small-latest-dataset#ratings.csv, and import a small amount of the data set into MySql server.
+## The Set Up in SQL
 
-Then I imported the database, 'movies, I created out of the original dataset.
+I aquired a user ratings of movies dataset from, https://www.kaggle.com/shubhammehta21/movie-lens-small-latest-dataset#ratings.csv, and import a small amount of the data set into MySql server.
+
+I used the below code to create the database:
+
+*/
+CREATE DATABASE movies;
+/*
+
+
+*/
+USE movies;
+
+CREATE TABLE ratings
+( 
+userId int(250) NULL , 
+movieId int(250) NULL, 
+rating int(10) NULL
+) ENGINE=InnoDB;
+
+
+Then I imported the database using the import wizard tool,into the table 'ratings' with the database 'movies' I created
+
+
+
+
+## Connection to MySQL in R
 
 ```{r}
 library(RMySQL)
@@ -30,9 +57,13 @@ library(RMySQL)
 db <- dbDriver("MySQL")
 ```
 
+
+
 ```{r}
 mydb <- dbConnect(db, username="root", password="Yogibear1", dbname ="movies", host="localhost")
 ```
+
+
 
 ```{r}
 sql <- "SELECT * from ratings"
@@ -62,4 +93,3 @@ final$movieId[final$movieId == "7"] <- "Dora the Explorer"
 final$movieId[final$movieId == "50"] <- "It: Chapter 2"
 final$movieId[final$movieId == "70"] <- "Angel has"
 ```
-
