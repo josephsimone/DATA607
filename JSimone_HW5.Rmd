@@ -2,7 +2,7 @@
 title: "Data 607 Assignment 5"
 author: "Joseph Simone"
 date: "9/26/2019"
-output: pdf_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -123,21 +123,21 @@ flights_aggr_df <- clean_data %>% select(Airline, Status, Flights, Destination) 
 
 
 ```{r}
-flights_city <-  flights_aggr_df %>%
-group_by(Airline, Status) %>% 
+flights_by_city_df <- flights_aggr_df %>%
+group_by(Airline, Destination) %>% 
     mutate(percent = round(total/sum(total)*100, 2),
            percent_formatted=paste0(round(total/sum(total)*100, 1), "%")) 
 ```
 
 
 ```{r}
-flights_city_df <- as.data.frame(flights_city)
-flights_city_df
+flights_by_city_df <- as.data.frame(flights_by_city_df)
+flights_by_city_df
 ```
 
 
 ```{r}
-flights_city_df %>% filter(Status == "Delayed") %>%
+flights_by_city_df %>% filter(Status == "Delayed") %>%
 ggplot( aes(x=Destination, y=percent, fill=Airline)) +
     geom_bar(stat="identity", position=position_dodge(), colour="black") +
     geom_text(aes(label=percent_formatted), vjust=.5, hjust=1,position= position_dodge(width=0.9),  color="black") +
