@@ -1,0 +1,148 @@
+---
+title: "Data 607 Assignment 5"
+author: "Joseph Simone"
+date: "9/26/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+library(tidyr)
+library(dplyr)
+library(png)
+library(ggplot2)
+```
+
+Libaries used:
+library(knitr)
+library(png)
+library(tidyr)
+library(dplyr)
+
+## Tidying and transforming Data
+
+The chart below describes arrival delays for two airlines across five destinations. 
+
+Your task is to:
+
+(1) Create a .CSV file (or optionally, a MySQL database!) that includes all of the information above.
+
+You’re encouraged to use a “wide” structure similar to how the information appears above, so
+that you can practice tidying and transformations as described below.
+
+(2) Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy
+and transform your data.
+
+(3) Perform analysis to compare the arrival delays for the two airlines.
+
+(4) Your code should be in an R Markdown file, posted to rpubs.com, and should include narrative
+descriptions of your data cleanup work, analysis, and conclusions.
+
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/4.png"
+include_graphics(imgage)
+```
+
+## DataFrame Creation
+
+```{r}
+flight_times <- rbind(c(NA, NA, "Los Angeles", "Phoenix", "San Diego", "San Francisco", "Seattle"),
+             c("ALASKA", "On Time", 497, 221, 212, 503, 1841),
+             c(NA, "Delayed", 62, 12, 20, 102, 305),
+             c("AM WEST", "On Time", 694, 4840, 383, 320, 201),
+             c(NA, "Delayed", 117, 415, 65, 129, 61))
+```
+
+
+## Local .cvs Export
+
+```{r}
+write.csv(flight_times,'C:/Users/jpsim/Documents/DATA Acquisition and Management/flight_times.csv', row.names = FALSE)
+```
+
+## GitHub Data Load
+```{r}
+raw_data <- read.csv(paste0("https://raw.githubusercontent.com/josephsimone/DATA607/master/flight_times.csv"), 
+                             stringsAsFactors = F); raw_data
+```
+
+## Tidying the dataset with the use of tidyr
+
+```{r}
+ clean_data <- raw_data %>%
+  mutate(Airlines1 = NA., Airlines2=lag(NA.)) %>% 
+  mutate(Airline = coalesce(Airlines1,Airlines2), Status = NA..1)  %>%
+  gather("Destination", "Flights", 3:7) %>% 
+  select(Airline:Flights) %>% 
+  arrange(Airline, desc(Status), Destination); clean_data
+```
+
+## Use the dplyr package to transform the data for analysis
+
+```{r}
+ flights_aggr_df <- clean_data %>% select(Airline, Status, Flights) %>% 
+      group_by(Airline, Status) %>% 
+      summarise(total = sum(Flights)) %>% 
+      mutate(percent           = round(total/sum(total) * 100, 2),
+             percent_formatted = paste0(round(total/sum(total) * 100, 1), "%"),
+             total_flights     = sum(total)) 
+```
+
+
+## Creation of new DataFram
+```{r}
+tidy_df <- as.data.frame(flights_aggr_df)
+tidy_df
+```
+
+
+
+## Vizualization of Data using GGPlot2
+
+```{r}
+tidy_df %>% filter(Status == "Delayed") %>%
+    ggplot( aes(x=Airline, y=percent, fill=Airline)) +
+    geom_bar(stat="identity", position=position_dodge(), colour="black", width = 0.5) +
+    coord_flip() + 
+    ggtitle("Overall Percentage of Flights Delayed by Airline") +
+    xlab("Airline") + ylab("Percentage of Flights Delayed") +
+    geom_text(aes(label=paste(percent_formatted, "\n n =", total_flights)), vjust=0.5, hjust=1.1,color="black")
+```
+
+```{r}
+flights_aggr_df <- clean_data %>% select(Airline, Status, Flights, Destination) %>% 
+      group_by(Airline, Status, Destination) %>% 
+      summarise(total = sum(Flights)) %>% 
+      mutate(percent           = round(total/sum(total) * 100, 2),
+            percent_formatted = paste0(round(total/sum(total) * 100, 1), "%"),
+            total_flights     = sum(total)) 
+```
+
+
+
+```{r}
+flights_city <-  flights_aggr_df %>%
+group_by(Airline, Status) %>% 
+    mutate(percent = round(total/sum(total)*100, 2),
+           percent_formatted=paste0(round(total/sum(total)*100, 1), "%")) 
+```
+
+
+```{r}
+flights_city_df <- as.data.frame(flights_city)
+flights_city_df
+```
+
+
+```{r}
+flights_city_df %>% filter(Status == "Delayed") %>%
+ggplot( aes(x=Destination, y=percent, fill=Airline)) +
+    geom_bar(stat="identity", position=position_dodge(), colour="black") +
+    geom_text(aes(label=percent_formatted), vjust=.5, hjust=1,position= position_dodge(width=0.9),  color="black") +
+        ggtitle("Percentage of Flights Delayed by Airline by City") +
+    xlab("Destination") + ylab("Percentage of Flights Delayed") +
+        coord_flip() 
+```
+
