@@ -1,0 +1,286 @@
+---
+title: "Data 607 Project 2"
+author: "Joseph Simone"
+date: "10/3/2019"
+output: html_document
+---
+
+# Objective 
+The goal of this assignment is to give you practice in preparing different datasets for downstream analysis work.
+
+Your task is to:
+
+(1) Choose any three of the “wide” datasets identified in the Week 6 Discussion items. (You may use your own dataset; please don’t use my Sample Post dataset, since that was used in your Week 6 assignment!) For each of the three chosen datasets:
+
+a. Create a .CSV file (or optionally, a MySQL database!) that includes all of the information included in the dataset. You’re encouraged to use a “wide” structure similar to how the information appears in the discussion item, so that you can practice tidying and transformations as described below.
+
+b. Read the information from your .CSV file into R, and use tidyr and dplyr as needed to tidy and transform your data. [Most of your grade will be based on this step!]
+
+c. Perform the analysis requested in the discussion item.
+ 
+ d.  Your code should be in an R Markdown file, posted to rpubs.com, and should include narrative descriptions of your data cleanup work, analysis, and conclusions.
+
+
+Libraries Used:
+```{r}
+library(XML)
+library(RCurl)
+library(rlist)
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(reshape2)
+library(knitr)
+library(png)
+library(ggplot2)
+```
+
+## Entertainment Related Datasets Analysis
+My first thought when it come to picking these three datasets, I wanted to apply the HTML scrapping into R to this project. The first discussion post I came across that I would, first be interested in working on, and second that would be an HTML page to scrap the nodes of a table. Wikipedia had one of the a vast amount of its' pages that include tables in the html code. My classmate, Saratchandra Palle, posted a discussion, that include the List of Primetime Emmy Award Winners with a wikipedia page link for it. 
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/EMMY.png"
+include_graphics(imgage)
+```
+
+#### Import and Tidying of Data
+```{r}
+theurl <- getURL("https://en.wikipedia.org/wiki/List_of_Primetime_Emmy_Award_winners",.opts = list(ssl.verifypeer = FALSE) )
+tables <- readHTMLTable(theurl)
+tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+
+n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+str(tables)
+```
+ Here I noticed that the HTML page was broken down into four seperate tables, the first one looked like the largest so I planned on seperating that one into a new dataframe. First, I needed to name the, NULL named dataframes within tables.
+
+```{r}
+
+names(tables) <- c("table1", "table2","table3", "table4", "table5")
+
+overall = tables[["table1"]]
+names(overall) <- as.matrix(overall[1, ])
+overall <- overall[-1, ]
+overall[] <- lapply(overall, function(x) type.convert(as.character(x)))
+head(overall)
+```
+After I quick analsis of this dataset, I noticed something odd. Under Comdey, Brian Cranston for Breaking bad was in the column. 
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/view_emmy.png"
+include_graphics(imgage)
+```
+If you look at the wiki table
+
+If a value of the same name, a person, show, etc., appeared in conectutive rows within the same column or catergory the import into R only counted that values ones for the first row or year with the column or catergory.
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/EMMY_page.png"
+include_graphics(imgage)
+```
+
+I wasn't giving up on this Wikipedia table scrapping quest, so being a movie buff, I went to the List of Academy Award winning films that I knew this paage would contain a  have a table that I could scrap into R. 
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/picture_page.png"
+include_graphics(imgage)
+```
+
+##### Import and Tidying of data
+```{r}
+theurl <- getURL("https://en.wikipedia.org/wiki/List_of_Academy_Award-winning_films",.opts = list(ssl.verifypeer = FALSE) )
+ tables <- readHTMLTable(theurl)
+ tables <- list.clean(tables, fun = is.null, recursive = FALSE)
+
+ n.rows <- unlist(lapply(tables, function(t) dim(t)[1]))
+
+ str(tables)
+```
+Again, I observed that there was more than one table embedded into the HTML page.
+
+```{r}
+names(tables) <- c("table1", "table2")
+ best_picture = tables[["table1"]]
+ names(best_picture) <- as.matrix(best_picture[1, ])
+ overall <- overall[-1, ]
+ best_picture[] <- lapply(best_picture, function(x) type.convert(as.character(x)))
+ best_picture <- best_picture[-1, ]
+ df_sorted_awards <-best_picture[order(best_picture$Awards, decreasing = TRUE),] 
+df_sorted_awards[1:15,]
+
+```
+
+```{r}
+top_three <- df_sorted_awards[1:3,]
+```
+As you can see out of the three way tie for most awards for a film at the Oscars at three, the "English Patient" has the most Nominations
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/picture.png"
+include_graphics(imgage)
+```
+
+I would like to complete this section of my Porject with a more detailed Entainment focus analyis.
+
+As you can see from the above picture, the winner of the best picture for this year is indicated on the webpage by being highlighted in yellow, I would have like to written a function that would loop through for the winner every year, but the number of values within each year are not equal.I would like to figure something out for this in the future for further analysis.
+
+
+While I was initially researching this project, I came across a number of .CSV files, one of which was a vast Movie Dataset
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/movie.png"
+include_graphics(imgage)
+```
+
+
+##### Import Data
+
+
+```{r}
+movies <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA607/master/movie_metadata.csv")
+head(movies,3)
+
+names(movies)
+```
+
+
+##### Omit any rows with an NA value
+```{r}
+movies2<-na.omit(movies)
+```
+
+##### Tidy and Graph Data
+
+My favorite books growing up were the Harry Potter Books, so I thought I would start there for analyis
+```{r}
+moviecost.df<-movies2[grep("^Harry Potter", movies2$movie_title), ]
+
+harrypotter.df<-subset(moviecost.df, select=c(movie_title, budget, gross))
+head(harrypotter.df)
+
+hp.df<-data.frame(harrypotter.df)
+
+hpmelt <- melt(hp.df, id = 'movie_title')
+head(hpmelt, 15)
+```
+
+
+##### GGPLOT for 
+```{r}
+ggplot() + geom_bar(aes(y = value, x = movie_title, fill =variable ), data = hpmelt,stat="identity")+
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))+
+    labs( x="Harry Potter Movie Frachise", y="Dollar Amount")
+
+```
+From this graph, it is hard to tell which Film Profited the Most 
+
+
+```{r}
+ harrypotter.df$Profit <- (harrypotter.df$gross + harrypotter.df$budget)
+ head(harrypotter.df)
+```
+According to the above table, Harry Potter & the Half-Blood Prince has the largest profit margin out of the six film shown. However, this dataset does not include the last two films of the franchise, so I would not be comfortable in saying that Harry Potter & the Half-Blood Prince is the most profitable film of that franchise. 
+
+## Fantasy Football Dataset
+
+Another discussion post I noticed that peaked my interest and would be good for HTML scrapping, was Tony Mei's fantasy football stats post.
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/FANTASY.png"
+include_graphics(imgage)
+```
+
+I took it upon myself, knowning there is a lot of fantasy football information, to find a website that would have the stats on their HTML page for scrapping. I found a website, seen below, and started scrapping.
+
+##### Data Import
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/FANTASY_page.png"
+include_graphics(imgage)
+```
+
+```{r}
+heurl <- getURL("https://www.footballdb.com/fantasy-football/index.html?pos=QB%2CRB%2CWR%2CTE&yr=2019&wk=all&rules=1",.opts = list(ssl.verifypeer = FALSE) )
+ fantasytables <- readHTMLTable(heurl)
+```
+
+##### Tidying of Data
+```{r}
+fantasytables <- list.clean(fantasytables, fun = is.null, recursive = FALSE)
+ n.rows <- unlist(lapply(fantasytables, function(t) dim(t)[1]))
+ 
+ str(fantasytables)
+```
+
+
+Like the Wikipedia page, there was more that one table embedded into the HTML page itself, seven actually.
+
+```{r}
+names(fantasytables) <- c("table1", "table2","table3", "table4", "table5","table6","table7")
+ best_fantasy_table = fantasytables[["table1"]]
+ head(best_fantasy_table,3)
+```
+
+As you can see from the dataframe. Russell Wilson, Lamar Jackson, and Patrick Mahomes were the top three fantasy football players for the 2019-2020 season.
+
+I do not have much knowledge about fantasy football or the relative information that would go into further analysis. However, after this Tidy, I would like to do some further analysis on this dataset in the future.
+
+## Property and Violent Crime Datasets Aggregated for Analysis
+For my final analysis for this project, I wanted to Aggregate two different data-set with similar variable and pertaining to the same area into one. Here I chose to do the top 10 City in America, with one data set focusing on property crimes and the other to do with violent crimes. I found both datasets that I aggregated on this website. 
+
+```{r, include=TRUE }
+imgage <- "C:/Users/jpsim/Documents/DATA Acquisition and Management/crime.png"
+include_graphics(imgage)
+```
+
+##### Import Two Datasets
+```{r}
+property <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA607/master/PropertyCrimeRates_1.csv")
+
+ violent <- read.csv(file="https://raw.githubusercontent.com/josephsimone/DATA607/master/ViolentCrimeRates.csv")
+```
+
+##### Variable names
+```{r}
+names(property)
+```
+
+
+```{r}
+names(violent)
+```
+
+##### Creation of smaller dataframes
+```{r}
+property2<-select(property, City, State, Property.Crime)
+
+violent2<-select(violent, City, State, Violent.Crimes)
+```
+
+
+##### Merge two datatframes
+```{r}
+total<-merge(x = property2, y = violent2, by = "City", all = TRUE)
+
+total$State.y <- NULL
+```
+
+##### Creating of Total Crime for Analyis
+```{r}
+total$Total <- (total$Property.Crime + total$Violent.Crimes)
+```
+
+
+##### GGPLOT for Total Crime by City 
+```{r}
+ggplot(data = total, aes(x=State.x,y=Total))+
+   
+    geom_bar(stat = 'identity',aes(fill=State.x))+
+    geom_text(aes( y = Total, 
+                  label = paste(Total),
+                  group = City,
+                  vjust = -0.4)) +
+    labs(title = "Total Crime in Citys of America, 2014", 
+         
+         y = "Total") +
+    facet_wrap(~City, ncol = 10)+
+    theme_bw()
+```
+
+According to the above graph, New York City has the highest total crimes out of the 10 most crime filled cities in the United States. 
