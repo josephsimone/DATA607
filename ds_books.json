@@ -1,0 +1,26 @@
+{"ds_books":[
+	{
+	"book#":"1",
+	"title":"R for Data Science: Import, Tidy, transform, Visualiza, and Model Data",
+	"authors":["Hadley Wickham, Garraett Grolemund"],
+	"publish_date":"December 2016",
+	"price":"$18.17",
+	"publisher":"O'Reilly"
+	},
+	{
+	"book#":"2",
+	"title":"An Introduction to Statistical Learning: with Applications in R",
+	"authors":["Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani"],
+	"publish_date":"September 2017",
+	"price":"$22.99",
+	"publisher":"Springer"
+	},
+	{
+	"book#":"3",
+	"title":"Advanced R",
+	"authors":"Hadley Wickham",
+	"publish_date":"September 2014",
+	"price":"$45.03",
+	"publisher":"CRC Press"
+	}]
+}
