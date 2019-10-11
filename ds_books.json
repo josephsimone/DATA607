@@ -5,7 +5,7 @@
 	"authors":["Hadley Wickham, Garraett Grolemund"],
 	"publish_date":"December 2016",
 	"price":"$18.17",
-	"publisher":"O'Reilly",
+	"publisher":"O'Reilly"
 	},
 	{
 	"book#":"2",
@@ -13,7 +13,7 @@
 	"authors":["Gareth James, Daniela Witten, Trevor Hastie, Robert Tibshirani"],
 	"publish_date":"September 2017",
 	"price":"$22.99",
-	"publisher":"Springer",
+	"publisher":"Springer"
 	},
 	{
 	"book#":"3",
@@ -21,6 +21,6 @@
 	"authors":"Hadley Wickham",
 	"publish_date":"September 2014",
 	"price":"$45.03",
-	"publisher":"CRC Press",
+	"publisher":"CRC Press"
 	}]
 }
