@@ -1,7 +1,5 @@
 {"ds_books":[
-
 	{
-
 	"book#" : "1",
 	"title":"R for Data Science: Import, Tidy, transform, Visualiza, and Model Data",
 	"authors":"[Hadley Wickham, Garraett Grolemund ]",
@@ -10,7 +8,6 @@
 	"publisher":"O'Reilly",
 
 	},
-
 	{
 
 	"book#" : "2",
@@ -19,18 +16,13 @@
 	"publish_date":"September 2017",
 	"price":"$22.99",
 	"publisher":"Springer",
-
 	},
-
 	{
-
 	"book#" : "3",
 	"title":"Advanced R",
 	"authors":"Hadley Wickham",
 	"publish_date":"September 2014",
 	"price":"$45.03",
 	"publisher":"CRC Press",
-
 	}]
-
 }
