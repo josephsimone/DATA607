@@ -1,0 +1,60 @@
+---
+title: 'Data 607 - Discussion Post #11'
+author: "Joseph Simone"
+date: "11/6/2019"
+output:
+  html_document:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Stock X - Recommendor System
+
+![](C:/Users/jpsim/Documents/DATA Acquisition and Management/stockx.jpg) 
+
+For those of you who do not know the website StockX, is a site  site that treats coveted consumer goods like sneakers as tradable commodities. StockX is part of a burgeoning group of online marketplaces that have turned resales of sneakers into a kind of currency — and an increasingly big business. The fever for sneakers has been fueled by “sneakerheads” and others who regard the shoes as investment assets. The market for resale sneakers and streetwear in North America is projected to reach 6 billion by 2025 from $2 billion today, according to Cowen, an investment bank.
+
+
+### K Nearest Neighbor
+
+After studying the dataset during the training phase, when a new image is given to the model, the KNN algorithm will classify it into either cats or dogs depending on the similarity in their features. So if the new image has pointy ears, it will classify that image as a cat because it is similar to the cat images. In this manner, the KNN algorithm classifies data points based on how similar they are to their neighboring data points.
+
+
+Sneakers, especially sneaker and shoes that are being sold online can be boil down to one thing; an image. Therefore the Remmonder System I would recommend to StockX is the K Nearest Neighbor Reasoning Approach. Each email you send to a member of your email reply for products, you tailor that product from the likeness of the features from their previous shoe catergory.
+
+KNN which stand for K Nearest Neighbor is a Supervised Machine Learning algorithm that classifies a new data point into the target class, depending on the features of its neighboring data points. 
+
+
+#### Features Of KNN Algorithm
+
+##### The KNN algorithm has the following features:
+
+KNN is a Supervised Learning  algorithm that uses labeled input data set to predict the output of the data points.
+
+It is one of the most simple Machine learning algorithms and it can be easily implemented for a varied set of problems.
+
+It is mainly based on feature similarity. KNN checks how similar a data point is to its neighbor and classifies the data point into the class it is most similar to.
+    
+#### Example of KNN 
+
+After studying the dataset during the training phase, when a new image is given to the model, the KNN algorithm will classify it into either cats or dogs depending on the similarity in their features. So if the new image has pointy ears, it will classify that image as a cat because it is similar to the cat images. In this manner, the KNN algorithm classifies data points based on how similar they are to their neighboring data points.
+
+
+For $StockX$, this approach could be based off the features of the particular shoe.
+
+#### KNN Algorithm Pseudocode
+
+Calculate D(x, xi), where 'i' =1, 2, ….., n and 'D' is the Euclidean measure between the data points.
+
+The calculated Euclidean distances must be arranged in ascending order.
+
+Initialize k and take the first k distances from the sorted list.
+
+Figure out the k points for the respective k distances.
+
+Calculate ki, which indicates the number of data points belonging to the ith class among k points i.e. k ≥ 0
+
+If ki >kj ∀ i ≠ j; put x in class i.
