@@ -1,0 +1,137 @@
+---
+title: "Co-Occurrences & Association: <br> Data Science in Context Presentation"
+author: "Joseph Simone"
+date: "11/11/19" 
+output:
+  slidy_presentation:
+    highlight: pygments
+    fig_width: 6 
+    fig_height: 4 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Background
+
+Co-orrurence grouping and association discovery attempts to find associations between entities based on transcations involving them.
+
+<center>![](/home/joe/Documents/Data607/pairs.jpg){ width=50%}
+
+
+## Co-Occurrence 
+
+The co-occurrence is simply a search through the data for combinations of items whos statistics are "interesting." 
+
+"If A occurs then B is likely to occur as well" 
+
+## Association
+
+Association discovery is commonly called Market Basket Analysis (MBA)
+
+The MBA helps us to understand what items are likely to be purchased together.
+
+
+## Complexity Control
+
+- Support of Association <br>Let’s say that we require rules to apply to at least 0.01% of all transactions
+
+- Strength of the Rule <br>Let’s say that we require that 5% or more of the time, a buyer of A also buys B
+  
+## Lift and Leverage
+- The Lift of the co-orrurrence of A and B is the probability that we actually see the two together.
+
+- The Leavage measure the diffenece of the quantities rather than their ratio. 
+
+
+## Measuring Surpise
+
+- $Lift(A,B)=\frac{p(A,B)}{p(A)*p(B)}$
+
+- $Leverage(A,B)= p(B,A) - p(A)*p(B)$
+
+
+
+## Beer and Lottery Tickters
+We operate a small convenience store where people buy groceries, liquor, lottery tickets, etc. We estimate that:
+
+-30% of all transactions involve beer.
+
+<center>![](/home/joe/Documents/Data607/beer.jpg){ width=20%}
+
+-20%  of all the transactions include both beer and lottery tickets.
+
+<center>![](/home/joe/Documents/Data607/lotto.png){ width=20%}
+
+
+
+***
+We assume:
+
+"Customers who buy beer are also likely to buy lottery tickets" = beer => lottery_tickets
+
+
+From here we can calculate the lift of this association. 
+
+$p(beer) = 0.3$
+$p(lotterytickets) = 0.4$
+```{r}
+beer = 0.3
+lottery_tickets = 0.4
+blt  = beer * lottery_tickets
+blt
+```
+
+$p(beer)*p(lotterytickets)=0.12$
+
+## What is the Lift ?
+As mentioned before, 20% of the transaction involve both.
+
+Therefore,
+$p(lotterytickets, beer) = 0.2$
+
+$Lift(A,B)=\frac{p(A,B)}{p(A)*p(B)}$
+
+```{r}
+pbl = 0.2
+bl_lift = pbl / blt
+bl_lift
+```
+This means that buying lottery tickets and beer together is about $1\frac{2}{3}$ times more likely
+
+## What is the Leverage ?
+
+$Leverage(A,B)= p(B,A) - p(A)*p(B)$
+
+$p(lotterytickets,beer)-p(lotterytickets)*p(beer)$
+```{r}
+bl_leverage = bl_lift - blt
+bl_leverage
+```
+
+Whatever is driving the co-occurence eresults is and 8% point increase in the probability of buying both together over what we wouls expect simplay because they are a popular item.
+
+## Summary
+
+When talking Co-Occurrence and Associations there are two to calculate: 
+-Support
+-Strength
+
+The Support of the Association is just the prevalence in the data of buying items or
+- $p(lotterytickets, beer)$
+```{r}
+pbl
+```
+$Support = $ 20%
+The Strength is the Conditional Probabilty, $(1 - p)$ or 
+-$(beer,lotterytickets)$  
+```{r}
+bl_strength = 1-blt
+bl_strength
+```
+$Strength =$ 67%
+
+## Questions / Comments 
+
+<center>![](/home/joe/Documents/Data607/Question_Mark.png) 
