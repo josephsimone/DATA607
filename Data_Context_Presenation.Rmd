@@ -1,0 +1,157 @@
+---
+title: 'Co-Occurrences & Association: <br> Data Science in Context Presentation'
+author: "Joseph Simone"
+subtitle: "Data 607"
+date: "11/11/19"
+output:
+  slidy_presentation:
+    css: styles.css
+    font_adjustment: -1
+    footer: CUNY SPS MSDS DATA 607
+    highlight: pygments
+    transition: slower
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background {#nextsteps .emphasized}
+
+$Co$-$Orrurence$ $Grouping$ $and$ $Association$ $Discovery$ attempts to find associations between entities based on transcations involving them.
+
+#### Why Find This?
+
+To see if these Co-Orrurences & Associations can capture true consumer preferences,and in doing so, this may increase revenue from cross-selling. 
+<center>![](C:/Users/jpsim/Documents/DATA Acquisition and Management/pairs.jpg){width=27%}
+
+
+## Co-Occurrence {#nextsteps .emphasized}
+
+<center>Co-Occurrence is simply a search through the data for combinations of items whos statistics are "interesting." 
+<center>"If A occurs then B is likely to occur as well" 
+
+## Association {#nextsteps .emphasized}
+
+<center>Association Discovery is commonly refered to as Market Basket Analysis (MBA).
+
+<center>The MBA helps us to understand what items are likely to be purchased together.
+
+
+## Complexity Control {#nextsteps .emphasized}
+
+#### Support of Association <br> 
+- Let’s say that we require rules to apply to at least 0.01% of all transactions
+
+#### Strength of the Rule <br>  
+- Let’s say that we require that 5% or more of the time, a buyer of A also buys B
+  
+## Lift and Leverage: surrise measures {#nextsteps .emphasized}
+* The Lift of the co-orrurrence of A and B is the probability that we actually see the two together.
+
+* The Leavage measure the diffenece of the quantities rather than their ratio. 
+
+
+## Measuring Surpise {#nextsteps .emphasized}
+
+<center> $Lift(A,B)=\frac{p(A,B)}{p(A)*p(B)}$<br>
+
+<center>  $Leverage(A,B)= p(B,A) - p(A)*p(B)$
+
+## Beer and Lottery Tickters {#nextsteps .emphasized}
+We operate a small convenience store where people buy groceries, liquor, lottery tickets, etc.  
+
+#### We estimate that:
+
+<center>30% of all transactions involve beer.
+
+<center>![](C:/Users/jpsim/Documents/DATA Acquisition and Management/beer.jpg){ width=12.5%}
+
+<center>40% of all transactions involve lottery.
+
+<center>![](C:/Users/jpsim/Documents/DATA Acquisition and Management/lotto.png){ width=12.5%}
+
+<center> 20% of all the transactions include both beer and lottery tickets.
+
+***
+## We assume: {#nextsteps .emphasized}
+
+#### "Customers who buy beer are also likely to buy lottery tickets"
+
+
+* From here we can calculate the chance that these products would be bought together(the product of the two variables). 
+
+$p(beer) = 0.3$<br>
+$p(lotterytickets) = 0.4$
+```{r}
+beer = 0.3
+lottery_tickets = 0.4
+blt  = beer * lottery_tickets
+blt
+```
+
+$p(beer)*p(lotterytickets)=0.12$
+
+## What is the Lift ? {#nextsteps .emphasized}
+As mentioned before, 20% of the transaction involve both.
+
+Therefore,
+$p(lotterytickets, beer) = 0.2$
+
+$Lift(A,B)=\frac{p(A,B)}{p(A)*p(B)}$
+
+```{r}
+pbl = 0.2
+bl_lift = pbl / blt
+bl_lift
+```
+This means that buying lottery tickets and beer together is about $1\frac{2}{3}$ times more likely
+
+## What is the Leverage ? {#nextsteps .emphasized}
+
+$Leverage(A,B)= p(B,A) - p(A)*p(B)$
+
+$p(lotterytickets,beer)-p(lotterytickets)*p(beer)$
+```{r}
+bl_leverage = pbl - blt
+bl_leverage
+```
+
+Whatever is driving the Co-Occurences result in an 8% point increase in the probability of buying both together, not just simply because we would expect them to be popular items.
+
+## Furthermore {#nextsteps .emphasized}
+
+#### When talking about Co-Occurrences and Associations 
+##### We can also calculate two other variables : <br>
+- $Support$<br>
+- $Strength$
+
+***
+
+#### The Support of the Association is just the prevalence in the data of buying items <br>
+or<br>
+$p(lotterytickets, beer)$
+```{r}
+pbl
+```
+
+$Support =$ 20%
+
+#### The Strength is the Conditional Probabilty, $(1 - p)$<br>
+or <br>
+ $(beer,lotterytickets)$  
+```{r}
+bl_strength = 1-blt
+bl_strength
+```
+$Strength =$ 67%
+
+## Questions or Comments  {#nextsteps .emphasized}
+
+<right>![](C:/Users/jpsim/Documents/DATA Acquisition and Management/Question_Mark.png) 
+<left>![](C:/Users/jpsim/Documents/DATA Acquisition and Management/comment.jpg) 
+
+## References  {#nextsteps .emphasized}
+
+ “12. Other Data Science Tasks and Techniques.” Data Science for Business: What You Need to Know about Data Mining and Data-Analytic Thinking, by Foster Provost and Tom Fawcett, O'Reilly, 2013, pp. 292–295.
