@@ -142,7 +142,7 @@ $Support =$ 20%
 or <br>
  $(beer,lotterytickets)$  
 ```{r}
-bl_strength = 1-blt
+bl_strength = bl_lift - 1
 bl_strength
 ```
 $Strength =$ 67%
