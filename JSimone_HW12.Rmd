@@ -1,0 +1,163 @@
+---
+title: "Data 607 -  Assingment 12"
+author: "Joseph Simone"
+date: "11/19/2019"
+output: 
+  html_document:
+    theme: journal
+    toc: true
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, message=FALSE, warning= FALSE}
+library(RMySQL)
+library(mongolite)
+library(tidyverse)
+```
+
+## No-SQL Migration 
+
+For this assignment, you should take information from a relational database and migrate it to a NoSQL database of your own choosing.
+
+For the relational database, you might use the flights database, the tb database, the "data skills" database your team created for Project 3, or another database of your own choosing or creation.
+
+For the NoSQL database, you may use MongoDB (which we introduced in week 7), Neo4j, or another NoSQL database of your choosing.
+
+
+### No-SQL - MongoDb : Database Creation in R
+```{r }
+test_json <-   '{"Star Wars Films" : [ { "Title":"The Phantom Menace", "Joe":"5" , "Kristyn ":"4", "Matt ":"3", "Kristin":"4", "Justin":"5", "Kristina":"3" }, { "Title":"The Clone Wars", "Joe":"4" , "Kristyn ":"3", "Matt ":"2", "Kristin":"3", "Justin":"4", "Kristina":"4" }, {"Title":"Revenge of the Sith", "Joe":"5" , "Kristyn ":"4", "Matt ":"4", "Kristin":"4", "Justin":"5", "Kristina":"5"}, { "Title":"A New Hope", "Joe":"5" , "Kristyn ":"5", "Matt ":"4", "Kristin":"4", "Justin":"4", "Kristina":"4"},{ "Title":"Empire Strikes Back", "Joe":"5" , "Kristyn ":"5", "Matt ":"4", "Kristin":"4", "Justin":"5", "Kristina":"4" },{"Title":"Return of the Jedi", "Joe":"4" , "Kristyn ":"5", "Matt ":"2", "Kristin":"4", "Justin":"5", "Kristina":"5" }]}'
+```
+
+
+```{r }
+star_wars_ratin <- mongo(url = "mongodb://localhost", options = ssl_options(weak_cert_validation = T))
+star_wars_ratin$drop()
+star_wars_ratin$insert(test_json)
+star_wars_df <- as.tibble(star_wars_ratin$find())
+star_wars_df 
+```
+
+
+```{r}
+Star_Wars_DF <- as.data.frame(star_wars_df[[1]][[1]])
+Star_Wars_DF
+```
+
+
+### SQL - MySQL : Database Creation in R
+
+
+```{r}
+db <- dbDriver("MySQL")
+mydb <- dbConnect(db, username="root", password="Yogibear1", host="localhost")
+dbSendQuery(mydb, "USE star_wars_films")
+```
+
+```{r}
+mydb <- dbConnect(db, username="root", password="Yogibear1", host="localhost", dbname = "star_wars_films")
+```
+
+
+```{r}
+dbSendQuery(mydb, "
+CREATE TABLE movies (
+title VARCHAR(50),
+Joe INT,
+Kristyn INT,
+Matt INT,
+Kristin INT,
+Justin INT,
+Kristina INT);")
+```
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('The Phantom Menace','5','3', '3','4','5','4');")
+```
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('The Clone Wars','4','5', '3','4','4','5');")
+```
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('Revenge of the Sith','5','5', '4','4','5','5');")
+```
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('A New Hope','5','5', '3','4','5','3');")
+```
+
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('Empire Strike Back','5','4', '3','5','5','4');")
+```
+
+```{r}
+dbSendQuery(mydb, "INSERT INTO movies
+(title, Joe, Kristyn, Matt, Kristin, Justin, Kristina)
+VALUES('Return of the Jedi','4','5', '3','3','4','4');")
+```
+
+
+```{r}
+try1 = fetch(dbSendQuery(mydb, "SELECT * FROM movies;"))
+```
+
+```{r}
+mysql_star_wars_df <- as.data.frame(try1)
+mysql_star_wars_df
+```
+
+
+### MySQL to MongoDb Migration
+
+```{r}
+star_wars_rating <- mongo(url = "mongodb://localhost", options = ssl_options(weak_cert_validation = T))
+star_wars_rating$drop()
+star_wars_rating$count("{}")
+```
+
+```{r}
+star_wars_rating$insert(try1)
+```
+
+```{r}
+star_wars_rating$count("{}")
+```
+
+```{r}
+nosql_star_wars_df <- as.data.frame(star_wars_rating$find())
+nosql_star_wars_df
+```
+
+
+
+### No-SQL vs SQL
+
+Structured Query Language uses defined schema and rigid variables to define databases. 
+No-SQL uses documents that have flexible schema, such as json. Therefore , each instance can have a fluid number of named schemas.
+
+### Advantages of No-SQL
+
+No-SQL allows easy migration of data due to the easy and flexible schema.
+No-SQL databases such as MongoDB are known have higher performance and scale better than traditional SQL databases.
+
+### Disadvantages of No-SQL
+
+If databases have many links, with the same primary key, this is where Structured Query Language would be the optimal set-up. 
+
+In addition, if databases are better represented with emphasis placed on the connection between different variables, this is where the use of a no-sql graph  is more practical.
